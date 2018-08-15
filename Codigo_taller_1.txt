@@ -1,0 +1,96 @@
+/*-----------crear bd en postgrest:*/
+create database biblioteca;
+
+
+
+/*-------------crear tablas:*/
+\c biblioteca
+
+create table AREA(
+id_area char(2),
+area varchar(35),
+primary key (id_area));
+
+create table TIPO_LIBRO(
+id_tipo char(2),
+tipo varchar(35),
+primary key (id_tipo));
+
+create table LIBRO(
+id_libro char(2),
+titulo varchar (35),
+id_area char(2) references AREA(id_area),
+primary key(id_libro));
+
+
+
+/*----------insertar valores en tablas:*/
+insert into AREA(id_area, area) values ('01','MATEMATICAS');
+insert into AREA(id_area, area) values ('02','INGLES');
+insert into AREA(id_area, area) values ('03','INFORMATICA');
+insert into AREA(id_area, area) values ('04','FISICA');
+select * from AREA;
+
+insert into TIPO_LIBRO(id_tipo, tipo) values ('T1','REVISTA');
+insert into TIPO_LIBRO(id_tipo, tipo) values ('T2','TOMO');
+insert into TIPO_LIBRO(id_tipo, tipo) values ('T3','MANUAL');
+select * from TIPO_LIBRO;
+
+insert into LIBRO(id_libro, titulo, id_area) values ('L1', 'ANAL. SISTEMA', '03');
+insert into LIBRO(id_libro, titulo, id_area) values ('L2', 'BASES DATOS', '03');
+insert into LIBRO(id_libro, titulo, id_area) values ('L3', 'INGLES TOMO 1', '02');
+insert into LIBRO(id_libro, titulo, id_area) values ('L4', 'MAGNETISMO', '04');
+insert into LIBRO(id_libro, titulo, id_area) values ('L5', 'ELECTRICIDAD', '04');
+insert into LIBRO(id_libro, titulo, id_area) values ('L6', 'ALGEBRA', '01');
+insert into LIBRO(id_libro, titulo, id_area) values ('L7', 'GEOMETRIA', '01');
+insert into LIBRO(id_libro, titulo, id_area) values ('L8', 'INTEGRALES', '01');
+insert into LIBRO(id_libro, titulo, id_area) values ('L9', 'INGLES TOMO 2', '02');
+select * from LIBRO;
+
+/*------elimnar libro titulado INGLES TOMO 2*/
+delete from LIBRO
+where titulo='INGLES TOMO 2';
+
+/*-----Listar todos los libros de la tabla libros*/
+select from * LIBRO;
+
+/*---- Cambiar el nombre del area INGLES por IDIOMAS*/
+update AREA set area='IDIOMAS' where area='INGLES'; 
+
+
+/---- Cambiar el nombre del libro ANALISIS SISTEMA por ANALISIS DISEÑO*/
+update LIBRO set titulo='ANALISIS DISENO' where titulo='ANAL. SISTEMA';
+
+/*----Eliminar los libros con id_area igual a 02*/
+delete from LIBRO where id_area='02';
+
+/*------ agregar un campo a la tabla LIBRO llamado id_tipo carácter de longitud 2*/
+alter table LIBRO add column id_tipo char(2);
+
+/*----- Actualizar todos los registros de la tabla LIBRO poniendoles como id_tipo el valor de T2*/
+update LIBRO set id_tipo='T2';
+
+
+/*Modifique la tabla TIPO_LIBRO y cambie el nombre del atributo tipo por presentación, mantenga su mismo dato*/
+alter table TIPO_LIBRO rename column tipo to presentacion;
+
+/*Modifique la tabla LIBRO, agregando una llave foránea para el atributo id_tipo, referenciando la tabla TIPO_LIBRO en el atributo id_tipo;*/
+alter table LIBRO add foreign key(id_tipo) references TIPO_LIBRO(id_tipo);
+
+
+/*Cambie el valor del campo id_tipo del LIBRO titulado integrales, por el valor T1.*/
+update LIBRO set id_tipo='T1' where titulo='INTEGRALES';
+
+
+
+/*Elimine la llave foránea id_area de la tabla libro*/
+alter table LIBRO drop id_area;
+
+/*
+alter table LIBRO
+add constraint restriccion_tipo_libro
+foreign key (id_tipo)
+references TIPO_LIBRO(id_tipo)
+on delete set null 
+on update cascade;
+
