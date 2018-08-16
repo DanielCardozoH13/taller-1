@@ -1,9 +1,9 @@
-/*-----------crear bd en postgrest:*/
+/*----------1)	Crear bd denominada biblioteca*/
 create database biblioteca;
 
 
 
-/*-------------crear tablas:*/
+/*-----------2) 	crear tablas:*/
 \c biblioteca
 
 create table AREA(
@@ -24,7 +24,7 @@ primary key(id_libro));
 
 
 
-/*----------insertar valores en tablas:*/
+/*----------3)	Inserte los siguientes registros en las tablas correspondientes*/
 insert into AREA(id_area, area) values ('01','MATEMATICAS');
 insert into AREA(id_area, area) values ('02','INGLES');
 insert into AREA(id_area, area) values ('03','INFORMATICA');
@@ -47,46 +47,46 @@ insert into LIBRO(id_libro, titulo, id_area) values ('L8', 'INTEGRALES', '01');
 insert into LIBRO(id_libro, titulo, id_area) values ('L9', 'INGLES TOMO 2', '02');
 select * from LIBRO;
 
-/*------elimnar libro titulado INGLES TOMO 2*/
+/*----4)	Eliminar el registro titulado INGLES TOMO 2*/
 delete from LIBRO
 where titulo='INGLES TOMO 2';
 
-/*-----Listar todos los libros de la tabla libros*/
+/*----5)	Listar todos los libros de la tabla libros*/
 select from * LIBRO;
 
-/*---- Cambiar el nombre del area INGLES por IDIOMAS*/
+/*----6)	Cambiar el nombre del area INGLES por IDIOMAS*/
 update AREA set area='IDIOMAS' where area='INGLES'; 
 
 
-/---- Cambiar el nombre del libro ANALISIS SISTEMA por ANALISIS DISEÑO*/
+/---- 7)	Cambiar el nombre del libro ANALISIS SISTEMA por ANALISIS DISEÑO*/
 update LIBRO set titulo='ANALISIS DISENO' where titulo='ANAL. SISTEMA';
 
-/*----Eliminar los libros con id_area igual a 02*/
+/*----8)	Eliminar los libros con id_area igual a 02*/
 delete from LIBRO where id_area='02';
 
-/*------ agregar un campo a la tabla LIBRO llamado id_tipo carácter de longitud 2*/
+/*----9)	 agregar un campo a la tabla LIBRO llamado id_tipo carácter de longitud 2*/
 alter table LIBRO add column id_tipo char(2);
 
-/*----- Actualizar todos los registros de la tabla LIBRO poniendoles como id_tipo el valor de T2*/
+/*----10)	Actualizar todos los registros de la tabla LIBRO poniendoles como id_tipo el valor de T2*/
 update LIBRO set id_tipo='T2';
 
 
-/*Modifique la tabla TIPO_LIBRO y cambie el nombre del atributo tipo por presentación, mantenga su mismo dato*/
+/*----11)	Modifique la tabla TIPO_LIBRO y cambie el nombre del atributo tipo por presentación, mantenga su mismo dato*/
 alter table TIPO_LIBRO rename column tipo to presentacion;
 
-/*Modifique la tabla LIBRO, agregando una llave foránea para el atributo id_tipo, referenciando la tabla TIPO_LIBRO en el atributo id_tipo;*/
+/*----12)	Modifique la tabla LIBRO, agregando una llave foránea para el atributo id_tipo, referenciando la tabla TIPO_LIBRO en el atributo id_tipo;*/
 alter table LIBRO add foreign key(id_tipo) references TIPO_LIBRO(id_tipo);
 
 
-/*Cambie el valor del campo id_tipo del LIBRO titulado integrales, por el valor T1.*/
+/*----13)	Cambie el valor del campo id_tipo del LIBRO titulado integrales, por el valor T1.*/
 update LIBRO set id_tipo='T1' where titulo='INTEGRALES';
 
 
 
-/*Elimine la llave foránea id_area de la tabla libro*/
-alter table LIBRO drop id_area;
+/*----14)	Elimine la llave foránea id_area de la tabla libro*/
+alter table LIBRO drop constraint libro_id_area_fkey;
 
-/*
+/*----15)	Inserte una llave foránea en la tabla LIBRO, empleando el atributo id_tipo, referenciando a la tabla TIPO_LIBRO en el atributo id_tipo, defina como regla de actualización CASCADA y como regla de eliminación SET NULL*/
 alter table LIBRO
 add constraint restriccion_tipo_libro
 foreign key (id_tipo)
@@ -94,3 +94,26 @@ references TIPO_LIBRO(id_tipo)
 on delete set null 
 on update cascade;
 
+/*----16)	Cambiar el valor del campo id_area de la tabla AREA por el valor de 10 para el área de INFORMATICA, verifique la tabla LIBRO para analizar los cambios sucedidos y documentar*/
+update AREA set id_area='10' where area='INFORMATICA';
+select * from LIBRO;
+
+/*----17)	Elimine de la tabla AREA el área de MATEMATICAS, verifique los registros de la tabla LIBRO para analizar los cambios sucedidos y documentar.*/
+delete from AREA where area='MATEMATICAS';
+select * from LIBRO;
+
+/*----18)	Modifique la llave foránea asociada al campo id_tipo de la tabla LIBRO defina reglas de actualización RESTRINGIDA y de eliminación CASCADA (recuerde que debe eliminar la llave existente y definir una nueva)*/
+alter table LIBRO drop constraint libro_id_tipo_fkey;
+alter table LIBRO drop constraint restriccion_tipo_fkey;
+alter table LIBRO add constraint libro_id_tipo_fkey foreign key (id_tipo) references TIPO_LIBRO (id_tipo) on delete cascade on update no action;
+
+
+/*----19)	Elimine el registro con valor T2 en el atributo id_tipo de la tabla TIPO_LIBRO, verifique los registros de la tabla LIBRO para analizar los cambios sucedidos y documentar.*/
+delete from TIPO_LIBRO where id_tipo='T2';
+select * from LIBRO;
+
+/*----20)	Modifique el valor del campo id_tipo de la tabla TIPO_LIBRO, para el tipo de libro REVISTA con valor id_tipo igual a T1, verifique los registros de la tabla LIBRO para analizar los cambios sucedidos y documentar.*/
+update TIPO_LIBRO set id_tipo='T1' where presentacion='REVISTA';
+select * from LIBRO;
+
+update TIPO_LIBRO set id_tipo='T2' where presentacion='REVISTA';
